@@ -248,7 +248,7 @@
         "predefinedScheme": "Rose Pine",
         "schedulingMode": "off",
         "syncGsettings": true,
-        "useWallpaperColors": false
+        "useWallpaperColors": true
     },
     "controlCenter": {
         "cards": [
@@ -701,13 +701,13 @@
                 "darkMode": true,
                 "generationMethod": "tonal-spot",
                 "paletteColors": [
-                    "#ebbcba",
-                    "#9ccfd8",
-                    "#31748f",
-                    "#eb6f92"
+                    "#c3c0ff",
+                    "#c7c4dd",
+                    "#eab9d2",
+                    "#ffb4ab"
                 ],
                 "path": "/home/briest/Pictures/Wallpapers/moon.jpg",
-                "useWallpaperColors": false
+                "useWallpaperColors": true
             }
         ],
         "fillColor": "#000000",
@@ -720,7 +720,7 @@
         "overviewEnabled": false,
         "overviewTint": 0.6,
         "panelPosition": "follow_bar",
-        "randomIntervalSec": 300,
+        "randomIntervalSec": 60,
         "setWallpaperOnAllMonitors": true,
         "showHiddenFiles": false,
         "skipStartupTransition": true,
@@ -734,7 +734,7 @@
         "useOriginalImages": false,
         "useSolidColor": false,
         "useWallhaven": false,
-        "viewMode": "browse",
+        "viewMode": "single",
         "wallhavenApiKey": "",
         "wallhavenCategories": "111",
         "wallhavenOrder": "desc",
