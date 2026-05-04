@@ -1,0 +1,64 @@
+prefer-no-csd
+
+workspace "gaming"
+include "./keybinds.kdl"
+include "./autostart.kdl"
+include "./layout.kdl"
+include "~/.config/niri-host.kdl"
+include "./input.kdl"
+include "./windowrules.kdl"
+
+debug {
+  // Allows notification actions and window activation from Noctalia.
+  honor-xdg-activation-with-invalid-serial
+}
+
+hotkey-overlay {
+    // Uncomment this line to disable the "Important Hotkeys" pop-up at startup.
+    skip-at-startup
+}
+
+screenshot-path "~/Pictures/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"
+
+animations {
+    // Uncomment to turn off all animations.
+    // off
+
+    // Slow down all animations by this factor. Values below 1 speed them up instead.
+    // slowdown 3.0
+}
+
+window-rule {
+    // This regular expression is intentionally made as specific as possible,
+    // since this is the default config, and we want no false positives.
+    // You can get away with just app-id="wezterm" if you want.
+    match app-id=r#"^org\.wezfurlong\.wezterm$"#
+    default-column-width {}
+}
+
+// Open the Firefox picture-in-picture player as floating by default.
+window-rule {
+    // This app-id regular expression will work for both:
+    // - host Firefox (app-id is "firefox")
+    // - Flatpak Firefox (app-id is "org.mozilla.firefox")
+    match app-id=r#"firefox$"# title="^Picture-in-Picture$"
+    open-floating true
+}
+
+// Example: block out two password managers from screen capture.
+// (This example rule is commented out with a "/-" in front.)
+/-window-rule {
+    match app-id=r#"^org\.keepassxc\.KeePassXC$"#
+    match app-id=r#"^org\.gnome\.World\.Secrets$"#
+
+    block-out-from "screen-capture"
+
+    // Use this instead if you want them visible on third-party screenshot tools.
+    // block-out-from "screencast"
+}
+
+// Example: enable rounded corners for all windows.
+// (This example rule is commented out with a "/-" in front.)
+
+include "./noctalia.kdl"
+

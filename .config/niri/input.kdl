@@ -1,0 +1,19 @@
+input {
+    keyboard {
+        xkb {
+            layout "de"
+            variant "nodeadkeys"
+        }
+    }
+
+    touchpad {
+        tap
+        natural-scroll
+    }
+
+    mouse {
+        accel-speed 0.0
+    }
+    warp-mouse-to-focus
+    focus-follows-mouse max-scroll-amount="0%"
+}

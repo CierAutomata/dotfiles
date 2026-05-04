@@ -1,0 +1,15 @@
+prefer-no-csd
+
+workspace "gaming"
+screenshot-path "~/Pictures/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"
+
+include "autostart.kdl"
+include "input.kdl"
+include "layout.kdl"
+include "animations.kdl"
+include "keybinds.kdl"
+include "windowrules.kdl"
+include "noctalia.kdl"
+// host-specific: outputs + keyboard layout
+// nix generates ~/.config/niri-host.kdl → hosts/$hostname.kdl (see modules/home.nix)
+include "hosts/milky.kdl"

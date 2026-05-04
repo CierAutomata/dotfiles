@@ -1,0 +1,26 @@
+// ── Milky (Desktop, 3 Monitore) ───────────────────────────────────────────────
+
+output "DP-3" {
+    mode "3840x2160@240.058"
+    scale 1.5
+    position x=3400 y=1294
+}
+
+output "DP-2" {
+    mode "1920x1080@60"
+    scale 1.0
+    position x=1480 y=1654
+}
+
+output "HDMI-A-4" {
+    mode "1920x1080@60"
+    scale 1.0
+    position x=5960 y=1778
+}
+
+// GTK HiDPI-Hints für 1.5x-Scaling auf DP-3
+environment {
+    GDK_SCALE "2"
+    GDK_DPI_SCALE "0.75"
+    QT_AUTO_SCREEN_SCALE_FACTOR "1"
+}

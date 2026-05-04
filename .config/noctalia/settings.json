@@ -177,6 +177,10 @@
                     "unreadBadgeColor": "primary"
                 },
                 {
+                    "iconColor": "none",
+                    "id": "PowerProfile"
+                },
+                {
                     "deviceNativePath": "__default__",
                     "displayMode": "graphic-clean",
                     "hideIfIdle": false,
@@ -190,13 +194,6 @@
                     "iconColor": "none",
                     "id": "Volume",
                     "middleClickCommand": "pwvucontrol || pavucontrol",
-                    "textColor": "none"
-                },
-                {
-                    "applyToAllMonitors": false,
-                    "displayMode": "onhover",
-                    "iconColor": "none",
-                    "id": "Brightness",
                     "textColor": "none"
                 },
                 {
@@ -245,7 +242,7 @@
         "manualSunrise": "06:30",
         "manualSunset": "18:30",
         "monitorForColors": "",
-        "predefinedScheme": "Rose Pine",
+        "predefinedScheme": "Eldritch",
         "schedulingMode": "off",
         "syncGsettings": true,
         "useWallpaperColors": true
@@ -323,7 +320,7 @@
         "backgroundOpacity": 1,
         "colorizeIcons": false,
         "deadOpacity": 0.6,
-        "displayMode": "auto_hide",
+        "displayMode": "exclusive",
         "dockType": "floating",
         "enabled": false,
         "floatingRatio": 1,
@@ -357,7 +354,7 @@
         "animationDisabled": false,
         "animationSpeed": 1,
         "autoStartAuth": false,
-        "avatarImage": "/home/briest/.face",
+        "avatarImage": "~/.face",
         "boxRadiusRatio": 1,
         "clockFormat": "hh\\nmm",
         "clockStyle": "custom",
@@ -626,14 +623,6 @@
         "activeTemplates": [
             {
                 "enabled": true,
-                "id": "btop"
-            },
-            {
-                "enabled": true,
-                "id": "discord"
-            },
-            {
-                "enabled": true,
                 "id": "emacs"
             },
             {
@@ -671,9 +660,33 @@
             {
                 "enabled": true,
                 "id": "code"
+            },
+            {
+                "enabled": true,
+                "id": "cava"
+            },
+            {
+                "enabled": true,
+                "id": "btop"
+            },
+            {
+                "enabled": true,
+                "id": "niri"
+            },
+            {
+                "enabled": true,
+                "id": "fuzzel"
+            },
+            {
+                "enabled": true,
+                "id": "zenBrowser"
+            },
+            {
+                "enabled": true,
+                "id": "discord"
             }
         ],
-        "enableUserTheming": false
+        "enableUserTheming": true
     },
     "ui": {
         "boxBorderEnabled": false,
@@ -691,7 +704,7 @@
     },
     "wallpaper": {
         "automationEnabled": true,
-        "directory": "/home/briest/Pictures/Wallpapers",
+        "directory": "~/Pictures/Wallpapers",
         "enableMultiMonitorDirectories": false,
         "enabled": true,
         "favorites": [
@@ -706,7 +719,63 @@
                     "#eab9d2",
                     "#ffb4ab"
                 ],
-                "path": "/home/briest/Pictures/Wallpapers/moon.jpg",
+                "path": "~/Pictures/Wallpapers/moon.jpg",
+                "useWallpaperColors": true
+            },
+            {
+                "appearance": "dark",
+                "colorScheme": "Rose Pine",
+                "darkMode": true,
+                "generationMethod": "tonal-spot",
+                "paletteColors": [
+                    "#feb3b5",
+                    "#e5bdbd",
+                    "#e6c08d",
+                    "#ffb4ab"
+                ],
+                "path": "~/Pictures/Wallpapers/su-san-lee-E_eWwM29wfU-unsplash_mirror.jpg",
+                "useWallpaperColors": true
+            },
+            {
+                "appearance": "dark",
+                "colorScheme": "Rose Pine",
+                "darkMode": true,
+                "generationMethod": "tonal-spot",
+                "paletteColors": [
+                    "#54dbc8",
+                    "#b1ccc6",
+                    "#adcae5",
+                    "#ffb4ab"
+                ],
+                "path": "/home/cier/Pictures/Wallpapers/iNiR-Walls/137155645_p0.jpg",
+                "useWallpaperColors": true
+            },
+            {
+                "appearance": "dark",
+                "colorScheme": "Rose Pine",
+                "darkMode": true,
+                "generationMethod": "tonal-spot",
+                "paletteColors": [
+                    "#b8c4ff",
+                    "#c2c5dd",
+                    "#e4bad9",
+                    "#ffb4ab"
+                ],
+                "path": "/home/cier/Pictures/Wallpapers/iNiR-Walls/wallpaper810.png",
+                "useWallpaperColors": true
+            },
+            {
+                "appearance": "dark",
+                "colorScheme": "Rose Pine",
+                "darkMode": true,
+                "generationMethod": "tonal-spot",
+                "paletteColors": [
+                    "#9ecaff",
+                    "#bbc7db",
+                    "#d6bee4",
+                    "#ffb4ab"
+                ],
+                "path": "/home/cier/Pictures/Wallpapers/iNiR-Walls/wallhaven-1qdz21.png",
                 "useWallpaperColors": true
             }
         ],
@@ -716,17 +785,17 @@
         "linkLightAndDarkWallpapers": true,
         "monitorDirectories": [
         ],
-        "overviewBlur": 0.4,
-        "overviewEnabled": false,
+        "overviewBlur": 0.48,
+        "overviewEnabled": true,
         "overviewTint": 0.6,
         "panelPosition": "follow_bar",
-        "randomIntervalSec": 60,
+        "randomIntervalSec": 1800,
         "setWallpaperOnAllMonitors": true,
         "showHiddenFiles": false,
         "skipStartupTransition": true,
         "solidColor": "#1a1a2e",
-        "sortOrder": "name",
-        "transitionDuration": 1500,
+        "sortOrder": "date_asc",
+        "transitionDuration": 500,
         "transitionEdgeSmoothness": 0.05,
         "transitionType": [
             "honeycomb"
@@ -734,12 +803,12 @@
         "useOriginalImages": false,
         "useSolidColor": false,
         "useWallhaven": false,
-        "viewMode": "single",
+        "viewMode": "recursive",
         "wallhavenApiKey": "",
         "wallhavenCategories": "111",
         "wallhavenOrder": "desc",
         "wallhavenPurity": "100",
-        "wallhavenQuery": "",
+        "wallhavenQuery": "anime",
         "wallhavenRatios": "",
         "wallhavenResolutionHeight": "",
         "wallhavenResolutionMode": "atleast",

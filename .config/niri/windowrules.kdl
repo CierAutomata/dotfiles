@@ -1,0 +1,73 @@
+window-rule {
+    geometry-corner-radius 5
+    clip-to-geometry true
+}
+
+// Brave: keine Transparenz
+window-rule {
+    match app-id="brave-browser"
+    opacity 1.0
+}
+window-rule { 
+    match is-active=false
+    opacity 0.9
+}
+//// Steam-Client auf Gaming-Workspace
+//window-rule {
+//    match app-id="steam" title="Steam"
+//    open-on-workspace "gaming"
+//}
+//
+//// Steam-Popups (alle Fenster außer dem Hauptfenster) floating
+//window-rule {
+//    match app-id="steam" title=r#"^(?!Steam$).*$"#
+//    open-floating true
+//}
+//
+//// Steam-Spiele auf Gaming-Workspace, Vollbild
+//window-rule {
+//    match app-id=r#"steam_app_.*"#
+//    open-on-workspace "gaming"
+//    open-fullscreen true
+//}
+//
+//// BG3 auf Gaming-Workspace, Vollbild
+//window-rule {
+//    match app-id="bg3"
+//    open-on-workspace "gaming"
+//    open-fullscreen true
+//}
+//
+//// QEMU-VMs auf eigenem Workspace (kein "empty"-Konzept in Niri)
+//window-rule {
+//    match app-id=r#"^\.?qemu-system-.*$"#
+//    open-on-workspace "vms"
+//}
+//
+//// Gamescope auf Gaming-Workspace, Vollbild
+//window-rule {
+//   match app-id="gamescope"
+//   open-on-workspace "gaming"
+//    open-fullscreen true
+//}
+//
+
+/* Apps: blur them all without xray for a better look */
+window-rule {
+  background-effect {
+    blur true
+    xray false
+  }
+}
+
+/* Noctalia: blur everywhere without xray for a better look */
+layer-rule {
+  match namespace="^noctalia-(background|launcher-overlay|dock)-.*$"
+  background-effect {
+    xray false
+  }
+}
+layer-rule {
+  match namespace="^noctalia-overview*"
+place-within-backdrop true
+}
