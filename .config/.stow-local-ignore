@@ -1,0 +1,2 @@
+# Files that stow should never touch (local-only, not in repo)
+hypr/hosts/current\.conf

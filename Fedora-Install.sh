@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 #
-# MangoWM Fedora 44 Minimal Installation Script
-# Run this from the TTY on a fresh Fedora 44 Everything (minimal) install.
+# MangoWM Fedora 42 Minimal Installation Script
+# Run this from the TTY on a fresh Fedora 42 Everything (minimal) install.
+#
+# Expected dotfiles layout:
+#   ~/dotfiles/.config/<app>/   → stowed to ~/.config/<app>
 #
 # Usage:
 #   chmod +x install.sh
@@ -11,15 +14,12 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-DOTFILES_DIR="${SCRIPT_DIR}/dotfiles"
-WALLPAPERS_DIR="${SCRIPT_DIR}/wallpapers"
 SDDM_THEME_DIR="${SCRIPT_DIR}/sddm-theme"
 
 # Colors
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
 CYAN='\033[0;36m'
 NC='\033[0m'
 
@@ -52,9 +52,9 @@ preflight_checks() {
         exit 1
     fi
 
-    if [[ ! -d "$DOTFILES_DIR" ]]; then
-        log_err "Dotfiles directory not found at ${DOTFILES_DIR}"
-        log_err "Make sure this script is in the same directory as the 'dotfiles' folder."
+    if [[ ! -d "${SCRIPT_DIR}/.config" ]]; then
+        log_err "Expected ${SCRIPT_DIR}/.config/ not found."
+        log_err "Dotfiles must use the layout: ~/dotfiles/.config/<app>/"
         exit 1
     fi
 
@@ -64,7 +64,6 @@ preflight_checks() {
 configure_dnf() {
     log_info "Configuring DNF..."
 
-    # Check if already configured
     if grep -q "^installonly_limit=3" /etc/dnf/dnf.conf 2>/dev/null && \
        grep -q "^max_parallel_downloads=15" /etc/dnf/dnf.conf 2>/dev/null && \
        grep -q "^defaultyes=True" /etc/dnf/dnf.conf 2>/dev/null; then
@@ -74,23 +73,18 @@ configure_dnf() {
 
     sudo cp /etc/dnf/dnf.conf "/etc/dnf/dnf.conf.bak.$(date +%Y%m%d%H%M%S)"
 
-    # Use Python to safely update only the requested keys while preserving existing config
     sudo python3 - <<'PYEOF'
 import configparser
-import os
 
 conf_path = "/etc/dnf/dnf.conf"
 
-# Read existing config, preserving case
 config = configparser.ConfigParser()
 config.optionxform = str
 config.read(conf_path)
 
-# Ensure [main] section exists
 if not config.has_section("main"):
     config.add_section("main")
 
-# Update only the requested settings
 updates = {
     "installonly_limit": "3",
     "max_parallel_downloads": "15",
@@ -100,13 +94,11 @@ updates = {
 for key, value in updates.items():
     config.set("main", key, value)
 
-# Write back
 with open(conf_path, "w") as f:
     config.write(f)
-
 PYEOF
 
-    log_ok "DNF configuration updated safely."
+    log_ok "DNF configuration updated."
 }
 
 add_repositories() {
@@ -128,15 +120,12 @@ add_repositories() {
         sudo dnf install --nogpgcheck --repofrompath 'terra,https://repos.fyralabs.com/terra$releasever' terra-release -y
     fi
 
-    log_info "Adding TekkRPM repository..."
-    if [[ -f /etc/yum.repos.d/tekk.repo ]] || [[ -f /etc/yum.repos.d/tekk-fedora-42.repo ]]; then
+    log_info "Adding TekkRPM repository (Fedora 42)..."
+    if [[ -f /etc/yum.repos.d/tekk-fedora-42.repo ]]; then
         log_ok "TekkRPM repository already configured. Skipping."
     else
-        if ! sudo dnf config-manager addrepo --from-repofile="https://forgejo.jtekk.dev/api/packages/TekkRPM/rpm/tekk-fedora-43.repo" -y 2>/dev/null; then
-            log_warn "dnf config-manager failed, falling back to curl..."
-            sudo curl -fL -o /etc/yum.repos.d/tekk.repo \
-                "https://forgejo.jtekk.dev/api/packages/TekkRPM/rpm/tekk-fedora-42.repo"
-        fi
+        sudo dnf config-manager addrepo \
+            --from-repofile="https://forgejo.jtekk.dev/api/packages/TekkRPM/rpm/tekk-fedora-42.repo" -y
     fi
 
     log_info "Refreshing package cache..."
@@ -152,45 +141,44 @@ install_packages() {
     sudo dnf install -y \
         kernel-devel kernel-headers gcc make dkms acpid \
         libglvnd-glx libglvnd-opengl libglvnd-devel pkgconfig \
-        git curl wget rsync xorg-x11-server-Xwayland
+        git curl wget rsync stow xorg-x11-server-Xwayland
 
     # System tools
     sudo dnf install -y \
         btop eza htop python3-pip pipx timeshift
 
-    # MangoWM / desktop environment packages
+    # Audio (PipeWire stack)
+    sudo dnf install -y \
+        pipewire wireplumber pipewire-pulse pipewire-alsa pipewire-jack
+
+    # MangoWM / desktop environment
     sudo dnf install -y \
         fastfetch fish helix kitty hyprland noctalia-shell neovim \
         qt5ct qt6ct grim slurp bibata-cursor-theme \
-        xdg-desktop-portal-wlr goverlay foot \
+        xdg-desktop-portal-hyprland goverlay foot \
+        wl-clipboard mako polkit-gnome \
         google-noto-color-emoji-fonts
 
     # Applications
     sudo dnf install -y \
-        nemo \
+        nemo yazi obs-studio \
         gnome-disk-utility gnome-software pavucontrol helium-browser zoxide \
         ffmpeg
 
     # Virtualization
+    sudo dnf group install -y --with-optional virtualization
     sudo dnf install -y \
-        libvirt virt-manager virt-viewer virt-install
+        edk2-ovmf swtpm swtpm-tools passt
+
+    # Rust toolchain (required for building virt-related tools from source)
+    sudo dnf install -y \
+        rust cargo systemd-devel
 
     # SDDM and Qt6 support for Pixie theme
     sudo dnf install -y \
         sddm qt6-qtdeclarative qt6-qtsvg qt6-qtquickcontrols2
 
     log_ok "All packages installed."
-}
-
-install_zed() {
-    if command -v zed &>/dev/null || [[ -x ~/.local/bin/zed ]]; then
-        log_ok "Zed already installed. Skipping."
-        return 0
-    fi
-
-    log_info "Installing Zed editor..."
-    curl -f https://zed.dev/install.sh | sh
-    log_ok "Zed installed to ~/.local/bin/zed"
 }
 
 install_sddm_pixie() {
@@ -201,7 +189,6 @@ install_sddm_pixie() {
         exit 1
     fi
 
-    # Only copy if theme files are missing or different
     if [[ -f /usr/share/sddm/themes/pixie/Main.qml ]] && \
        diff -q "${SDDM_THEME_DIR}/pixie/Main.qml" /usr/share/sddm/themes/pixie/Main.qml &>/dev/null; then
         log_ok "Pixie SDDM theme already installed. Skipping copy."
@@ -229,7 +216,6 @@ install_sddm_pixie() {
         log_ok "SDDM service enabled."
     fi
 
-    # Disable any conflicting display managers
     for dm in gdm lightdm lxdm greetd plasmalogin; do
         if systemctl is-enabled "${dm}.service" &>/dev/null 2>&1; then
             log_info "Disabling conflicting display manager: ${dm}"
@@ -240,47 +226,53 @@ install_sddm_pixie() {
     log_ok "SDDM with Pixie theme installed and enabled."
 }
 
-copy_dotfiles() {
-    log_info "Copying dotfiles to ~/.config/..."
+stow_dotfiles() {
+    log_info "Stowing dotfiles to ~/..."
 
-    mkdir -p ~/.config
+    # Pre-create ~/.config so stow folds into it rather than symlinking the whole dir.
+    mkdir -p "${HOME}/.config"
 
-    local dirs=(
-        fastfetch fish gtk-3.0 gtk-4.0 helix kitty mango
-        noctalia nvim obs-studio opencode qt5ct qt6ct yazi zed
-    )
-
-    for dir in "${dirs[@]}"; do
-        local src="${DOTFILES_DIR}/${dir}"
-        local dst="${HOME}/.config/${dir}"
-
-        if [[ -d "$src" ]]; then
-            rm -rf "$dst"
-            cp -r "$src" "$dst"
-            log_ok "Copied ${dir}"
-        else
-            log_warn "Source directory not found: ${src}"
-        fi
-    done
-
-    log_ok "All dotfiles copied."
+    # stow dir = ~/dotfiles, package = .config, target = ~
+    # Result: ~/.config/<app> → ../dotfiles/.config/<app>
+    stow --restow --dir="${SCRIPT_DIR}" --target="${HOME}" .config
+    log_ok "Dotfiles stowed."
 }
 
-copy_wallpapers() {
-    log_info "Copying wallpapers..."
+configure_hyprland_host() {
+    log_info "Configuring Hyprland host config..."
 
-    if [[ ! -d "$WALLPAPERS_DIR" ]]; then
-        log_warn "Wallpapers directory not found at ${WALLPAPERS_DIR}. Skipping."
+    local hosts_dir="${HOME}/.config/hypr/hosts"
+    local host_conf="${hosts_dir}/$(hostname).conf"
+    local current="${hosts_dir}/current.conf"
+
+    if [[ ! -d "$hosts_dir" ]]; then
+        log_warn "Hyprland hosts directory not found at ${hosts_dir}. Skipping."
         return 0
     fi
 
-    local dst="${HOME}/Pictures/Wallpapers"
-    mkdir -p "$dst"
+    if [[ ! -f "$host_conf" ]]; then
+        log_warn "No host config found for '$(hostname)' at ${host_conf}."
+        log_warn "Create it and re-run this function, or symlink manually:"
+        log_warn "  ln -sf ${host_conf} ${current}"
+        return 0
+    fi
 
-    # Use cp -r to copy all files, preserving the directory structure if any
-    cp -r "${WALLPAPERS_DIR}"/* "$dst/"
+    ln -sf "$host_conf" "$current"
+    log_ok "Hyprland host config set: $(hostname).conf → current.conf"
+}
 
-    log_ok "Wallpapers copied to ${dst}"
+configure_virtualization() {
+    log_info "Configuring virtualization..."
+
+    sudo systemctl enable --now libvirtd
+    log_ok "libvirtd service enabled and started."
+
+    if groups "$USER" | grep -q '\blibvirt\b'; then
+        log_ok "User already in libvirt group. Skipping."
+    else
+        sudo usermod -aG libvirt "$USER"
+        log_ok "User added to libvirt group. Re-login required for virt-manager access."
+    fi
 }
 
 set_shell() {
@@ -316,11 +308,10 @@ main() {
     configure_dnf
     add_repositories
     install_packages
-    install_zed
-    install_nvidia
     install_sddm_pixie
-    copy_dotfiles
-    copy_wallpapers
+    stow_dotfiles
+    configure_hyprland_host
+    configure_virtualization
     set_shell
     cleanup
 
@@ -331,7 +322,7 @@ main() {
     log_info "After reboot:"
     log_info "  - SDDM (Pixie theme) will be your login screen"
     log_info "  - Select your MangoWM session and log in"
-    log_info "  - NVIDIA drivers should be active (run nvidia-smi to verify)"
+    log_info "  - Re-login once after reboot for libvirt group membership to take effect"
 }
 
 main "$@"
