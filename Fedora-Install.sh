@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
-# MangoWM Fedora 42 Minimal Installation Script
-# Run this from the TTY on a fresh Fedora 42 Everything (minimal) install.
+# MangoWM Fedora Minimal Installation Script
+# Tested on Fedora 42/44. Run from the TTY on a fresh Fedora Everything (minimal) install.
 #
 # Expected dotfiles layout:
 #   ~/dotfiles/.config/<app>/   → stowed to ~/.config/<app>
@@ -120,12 +120,19 @@ add_repositories() {
         sudo dnf install --nogpgcheck --repofrompath 'terra,https://repos.fyralabs.com/terra$releasever' terra-release -y
     fi
 
-    log_info "Adding TekkRPM repository (Fedora 42)..."
-    if [[ -f /etc/yum.repos.d/tekk-fedora-42.repo ]]; then
+    log_info "Adding TekkRPM repository..."
+    if [[ -f /etc/yum.repos.d/tekk-fedora-$(rpm -E %fedora).repo ]]; then
         log_ok "TekkRPM repository already configured. Skipping."
     else
         sudo dnf config-manager addrepo \
-            --from-repofile="https://forgejo.jtekk.dev/api/packages/TekkRPM/rpm/tekk-fedora-42.repo" -y
+            --from-repofile="https://forgejo.jtekk.dev/api/packages/TekkRPM/rpm/tekk-fedora-$(rpm -E %fedora).repo" -y
+    fi
+
+    log_info "Adding Helium browser COPR..."
+    if dnf copr list --enabled 2>/dev/null | grep -q "imput/helium"; then
+        log_ok "Helium COPR already enabled. Skipping."
+    else
+        sudo dnf copr enable -y imput/helium
     fi
 
     log_info "Refreshing package cache..."
@@ -162,7 +169,7 @@ install_packages() {
     # Applications
     sudo dnf install -y \
         nemo yazi obs-studio \
-        gnome-disk-utility gnome-software pavucontrol helium-browser zoxide \
+        gnome-disk-utility gnome-software pavucontrol helium-bin zoxide \
         ffmpeg
 
     # Virtualization
